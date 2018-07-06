@@ -25,13 +25,13 @@ export default function(server : restify.Server) {
 		}
 	);
 
-	server.get('/todos', 
+	server.get('/todos',
 		//authorizeUser,
 		(req, res, next) => {
 			Todo.find({}, function(err, docs) {
 				if (err) {
 					return next(
-						new errors.InvalidContentError(err.errors.name.message),
+						new errors.InvalidContentError(err.message),
 					);
 				}
 				res.send(docs);
@@ -46,7 +46,7 @@ export default function(server : restify.Server) {
 			Todo.findOne({ _id: req.params.todo_id }, function(err, doc) {
 				if (err) {
 					return next(
-						new errors.InvalidContentError(err.errors.name.message),
+						new errors.InvalidContentError(err.message),
 					);
 				}
 
@@ -56,7 +56,7 @@ export default function(server : restify.Server) {
 		}
 	);
 
-	server.put('/todos/:todo_id', 
+	server.put('/todos/:todo_id',
 		//authorizeUser,
 		assertJSON,
 		(req, res, next) => {
@@ -65,9 +65,10 @@ export default function(server : restify.Server) {
 				data = {...data, _id: req.params.todo_id};
 			}
 			Todo.findOne({ _id: req.params.todo_id }, function(err, doc) {
+				// debugger;
 				if (err) {
 					return next(
-						new errors.InvalidContentError(err.errors.name.message),
+						new errors.InvalidContentError(err.message),
 					);
 				} else if (!doc) {
 					return next(
@@ -80,7 +81,7 @@ export default function(server : restify.Server) {
 				Todo.findByIdAndUpdate(data._id, data, { new: true }, function(err, todo) {
 					if (err) {
 						return next(
-							new errors.InvalidContentError(err.errors.name.message),
+							new errors.InvalidContentError(err.message),
 						);
 					}
 
@@ -91,13 +92,13 @@ export default function(server : restify.Server) {
 		}
 	);
 
-	server.del('/todos/:todo_id', 
+	server.del('/todos/:todo_id',
 		//authorizeUser,
 		(req, res, next) => {
 			Todo.remove({ _id: req.params.todo_id }, function(err) {
 				if (err) {
 					return next(
-						new errors.InvalidContentError(err.errors.name.message),
+						new errors.InvalidContentError(err.message),
 					);
 				}
 				res.send(204);
